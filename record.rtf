@@ -1,5 +1,28 @@
 2021-4-10 0.823 RFC:{'criterion': 'entropy','max_depth': 30,'max_features': 'sqrt','n_estimators': 100}. Merge table:All
 2021-4-11 0.821 {'criterion': 'entropy','max_depth': None,'max_features': 'sqrt','min_samples_leaf': 1,'min_samples_split': 5,'n_estimators': 100}, with RFC features importance top 20.
 
+feat_rank_15 = ['net_work_count', 'red_count', 'net_work_mean_kb', 'red_mean_rev',
+       'sus_count', 'cus_used_days', 'channel_most_fre', 'plan_name',
+       'gsma_model_name', 'internal_storage_capacity', 'total_ram',
+       'lte_category', 'year_released', 'os_version', 'cpu_cores', 'carrier',
+       'os_family', 'gsma_operating_system', 'expandable_storage', 'sim_size',
+       'lte_advanced', 'gsma_device_type', 'rev_type_most_fre',
+       'red_type_most_fre']
 2021-4-15 0.756 (criterion='gini',max_depth=None,max_features='auto',n_estimators=400) featrues top 5, label encoder RFC
+2021-4-16 0.475 () featrues top 5, label encoder RFC
+2021-4-17 0.69 RandomForestClassifier(criterion='gini',max_depth=30,max_features='auto',n_estimators=400) features top16, label encoder RFC
 
+2021-4-18 
+#top21 exclude cus_used_days, ver3 ordinal encode
+use_features = ['net_work_count', 'red_count', 'net_sms_mean_sum',
+       'net_voice_min_mean_sum', 'sus_count', 'de_re_counts', 'red_mean_rev',
+       'net_voice_count_mean_sum', 'net_mms_mean_sum', 'net_work_mean_kb',
+       'net_sms_ratio', 'net_voice_count_ratio', 'net_voice_min_ratio',
+       'net_mms_ratio', 'gsma_model_name',
+       'internal_storage_capacity', 'channel_unique', 'channel_most_fre',
+       'total_ram', 'year_released']
+RFC = RandomForestClassifier(criterion='entropy',max_depth=30,max_features='sqrt',n_estimators=40).fit(data_X[use_features],data_y)
+pred = RFC.predict(data_val_X[use_features])
+
+train(0.7837)
+test()
