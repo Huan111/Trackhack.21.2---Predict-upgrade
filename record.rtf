@@ -21,8 +21,7 @@ use_features = ['net_work_count', 'red_count', 'net_sms_mean_sum',
        'net_mms_ratio', 'gsma_model_name',
        'internal_storage_capacity', 'channel_unique', 'channel_most_fre',
        'total_ram', 'year_released']
-RFC = RandomForestClassifier(criterion='entropy',max_depth=30,max_features='sqrt',n_estimators=40).fit(data_X[use_features],data_y)
-pred = RFC.predict(data_val_X[use_features])
-
-train(0.7837)
+DTC = DecisionTreeClassifier(random_state = 11, max_features = "auto",max_depth = None)
+ABC = AdaBoostClassifier(base_estimator = DTC)
+train(0.7870)
 test()

@@ -73,3 +73,53 @@ CV_abc = GridSearchCV(estimator=ABC, param_grid=param_grid, cv= 10,n_jobs=-1,sco
 CV_abc.fit(data_X,data_y)
 CV_abc.best_params_
 
+
+################################top20 features in Random Forests using LR$########################
+from category_encoders import BinaryEncoder
+import pandas as pd
+teamname = 'emotional-support-vector-machine-unsw'
+root_folder='s3://tf-trachack-notebooks/'+teamname+'/jupyter/jovyan/'
+
+data_train_one_top20 = pd.read_csv(root_folder+"guohuan-li/new_data_1/train_top20.csv")
+data_eval_one_top20 = pd.read_csv(root_folder+"guohuan-li/new_data_1/eval_top20.csv")
+
+use_features = ['net_work_count','red_count',
+ 'net_sms_mean_sum',
+ 'net_voice_min_mean_sum',
+ 'sus_count',
+ 'de_re_counts',
+ 'red_mean_rev',
+ 'net_voice_count_mean_sum',
+ 'net_mms_mean_sum',
+ 'net_work_mean_kb',
+ 'net_sms_ratio',
+ 'net_voice_count_ratio',
+ 'net_voice_min_ratio',
+ 'net_mms_ratio',
+ 'gsma_model_name',
+ 'internal_storage_capacity',
+ 'channel_unique',
+ 'channel_most_fre',
+ 'total_ram',
+ 'year_released']
+
+#
+data_train = data_train_one_top20[use_features]
+data_val = data_eval_one_top20[use_features]
+data_y = data_train_one_top20['upgrade']
+
+cat_features = ['gsma_model_name','internal_storage_capacity','channel_most_fre','total_ram','year_released']
+
+data_train = BinaryEncoder(cols=cat_features).fit_transform(data_train)
+data_val = BinaryEncoder(cols=cat_features).fit_transform(data_val)
+
+#Logistic regression
+param_grid = {
+    'penalty' : ['l1', 'l2'],
+    'C' : np.logspace(-4, 4, 20),
+    'solver' : ['liblinear','lbfgs']}
+LR = LogisticRegression()
+CV_LR = GridSearchCV(estimator=LR, param_grid=param_grid, cv= 5,verbose=True,n_jobs=-1,scoring = 'f1')
+CV_LR.fit(data_train,data_y)
+print(CV_LR.best_params_)
+print(CV_LR.best_score_)
