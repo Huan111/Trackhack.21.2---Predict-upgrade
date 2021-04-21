@@ -24,4 +24,48 @@ use_features = ['net_work_count', 'red_count', 'net_sms_mean_sum',
 DTC = DecisionTreeClassifier(random_state = 11, max_features = "auto",max_depth = None)
 ABC = AdaBoostClassifier(base_estimator = DTC)
 train(0.7870)
-test()
+test(0.764)
+
+2021-4-19
+DTC = DecisionTreeClassifier(random_state = 11, max_features = "auto",max_depth = None,criterion = 'entropy',splitter= 'best')
+ABC = AdaBoostClassifier(base_estimator = DTC, learning_rate = 0.1, n_estimators = 90)
+
+RFC = RandomForestClassifier(criterion='entropy',max_depth=30,max_features='sqrt',n_estimators=300)
+
+XGB = xgb.XGBClassifier(learning_rate =0.1,n_estimators=1000,max_depth=5,min_child_weight=1,gamma=0,subsample=0.8,colsample_bytree=0.8,objective= 'binary:logistic',
+ nthread=4,
+ scale_pos_weight=1,
+ seed=27)
+
+ABC.fit(data_X[use_features],data_y)
+XGB.fit(data_X[use_features],data_y)
+RFC.fit(data_X[use_features],data_y)
+
+pred1=ABC.predict(data_val_X[use_features])
+pred2=XGB.predict(data_val_X[use_features])
+pred3=RFC.predict(data_val_X[use_features])
+
+final_pred = np.array([])
+for j in range(0,len(data_val_X)):
+    final_pred = np.append(final_pred, statistics.mode([pred1[j], pred2[j], pred3[j]]))
+
+train(0.790)
+test(0.786)
+
+2021-4-20
+#2021-4-20 train:0.79 top25 RFC max_depth= 13
+use_features_onehot = ['net_work_count', 'red_count', 'net_sms_mean_sum',
+       'net_voice_min_mean_sum', 'sus_count', 'red_mean_rev',
+       'net_mms_mean_sum', 'de_re_counts', 'net_voice_count_mean_sum',
+       'net_work_mean_kb', 'net_sms_ratio', 'net_voice_count_ratio',
+       'net_voice_min_ratio', 'net_mms_ratio', 
+       'channel_unique', 'gsma_model_name_other', 'de_re_channel_unique',
+       'internal_storage_capacity_other', 'channel_most_fre_IVR',
+       'total_ram_4096', 'plan_name_plan 1', 'os_version_other',
+       'channel_most_fre_APP', 'de_re_channel_most_fre_IVR']
+XGB = xgb.XGBClassifier( learning_rate =0.1, n_estimators=140, 
+ min_child_weight=1, gamma=0, subsample=0.8, colsample_bytree=0.8,max_depth= 13,
+ objective= 'binary:logistic', nthread=4, scale_pos_weight=1, seed=27).fit(data_train_X_one[use_features_onehot],data_train_y_one)
+pred = XGB.predict(data_val_X_one[use_features_onehot])
+
+test(0.776)
