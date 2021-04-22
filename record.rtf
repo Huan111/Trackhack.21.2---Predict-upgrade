@@ -69,3 +69,29 @@ XGB = xgb.XGBClassifier( learning_rate =0.1, n_estimators=140,
 pred = XGB.predict(data_val_X_one[use_features_onehot])
 
 test(0.776)
+
+#2021-4-22 top25 RFC one hot
+#0.783
+DTC = DecisionTreeClassifier(random_state = 11, max_features = "auto",max_depth = None,criterion = 'gini',splitter= 'best')
+ABC = AdaBoostClassifier(base_estimator = DTC, learning_rate = 0.001, n_estimators = 250)
+#0.781
+RFC = RandomForestClassifier(criterion='gini',max_depth=70,max_features='auto',n_estimators=400)
+
+#0.793
+XGB = xgb.XGBClassifier(max_depth = 13,
+ min_child_weight = 1, n_estimators = 401,subsample=0.8, colsample_bytree=0.8,
+ objective= 'binary:logistic', nthread=4, scale_pos_weight=1, seed=27)
+
+ABC.fit(data_train_X_one[use_features_onehot],data_train_y_one)
+XGB.fit(data_train_X_one[use_features_onehot],data_train_y_one)
+RFC.fit(data_train_X_one[use_features_onehot],data_train_y_one)
+
+pred1=ABC.predict(data_val_X_one[use_features_onehot])
+pred2=XGB.predict(data_val_X_one[use_features_onehot])
+pred3=RFC.predict(data_val_X_one[use_features_onehot])
+
+final_pred = np.array([])
+for j in range(0,len(data_val_X)):
+    final_pred = np.append(final_pred, statistics.mode([pred1[j], pred2[j], pred3[j]]))
+train(0.787)
+test()
